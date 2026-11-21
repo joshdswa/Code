@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4d33">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Install Green Book</title>
+<script src="qrcode.js"></script>
+<style>
+:root{--g:#1f4d33;--bg:#f4f1ea;--card:#fff;--ink:#1b1b1b;--mut:#6b6b6b;--line:#ddd7ca;--accent:#1f4d33}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121614;--card:#1d2420;--ink:#e9ece9;--mut:#9aa59e;--line:#2c3631;--accent:#8fd1a8}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+header{background:var(--g);color:#fff;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;font-weight:600;flex:1}
+header a{color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border-radius:8px;padding:8px 12px;font-size:15px}
+main{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 10px}
+ol{margin:0;padding-left:22px}
+li{margin:4px 0}
+.qr{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.qr .box{background:#fff;padding:12px;border-radius:12px;line-height:0}
+.qr .box img,.qr .box svg{width:220px;height:220px;display:block}
+.url{font-weight:600;word-break:break-all;color:var(--accent)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;border:0;border-radius:10px;padding:10px 16px;background:var(--g);color:#fff;font-weight:600;cursor:pointer}
+button.alt{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.note{font-size:14px;color:var(--mut)}
+.big{display:block;text-align:center;background:var(--g);color:#fff;text-decoration:none;border-radius:12px;padding:14px;font-size:17px;font-weight:600}
+</style>
+</head>
+<body>
+<header><h1>Install &amp; share</h1><a href="./">Open app</a></header>
+<main>
+  <div class="card qr">
+    <h2>Share with someone</h2>
+    <div class="box" id="qr"></div>
+    <div class="note">Point a phone camera at this code to open the app.</div>
+    <div class="url" id="url"></div>
+    <div class="btns"><button id="shareBtn" type="button">Share link</button><button id="copyBtn" class="alt" type="button">Copy link</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Android (Chrome)</h2>
+    <ol>
+      <li>Open the link in <b>Chrome</b>.</li>
+      <li>Tap <b>Install</b> at the top of the app, or tap the <b>⋮</b> menu → <b>Add to Home screen</b> / <b>Install app</b>.</li>
+      <li>Open <b>Green Book</b> from your home screen.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>iPhone / iPad (Safari)</h2>
+    <ol>
+      <li>Open the link in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (square with an arrow).</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li>Open <b>Green Book</b> from your home screen.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>First time you open it</h2>
+    <ol>
+      <li>The app asks for your PDF copy of the Green Book. Tap <b>Choose the Green Book PDF</b> and pick the file (it's often in <b>Downloads</b>).</li>
+      <li>That's it. The book stays on your phone, so you only do this once, and the app works without internet after that.</li>
+    </ol>
+    <p class="note">The hymn book PDF is not included in the app. Each person needs their own copy on their phone.</p>
+  </div>
+
+  <a class="big" href="./">Open Green Book</a>
+</main>
+<script>
+const appUrl=new URL('./',location.href).href;
+document.getElementById('url').textContent=appUrl.replace(/^https?:\/\//,'').replace(/\/$/,'');
+try{const q=qrcode(0,'M');q.addData(appUrl);q.make();document.getElementById('qr').innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true});}catch(e){}
+const shareBtn=document.getElementById('shareBtn');
+if(navigator.share){shareBtn.onclick=()=>navigator.share({title:'Green Book Hymn Finder',text:'Find any hymn in the Green Book by number or words:',url:appUrl}).catch(()=>{});}
+else shareBtn.hidden=true;
+document.getElementById('copyBtn').onclick=async e=>{try{await navigator.clipboard.writeText(appUrl);e.target.textContent='Copied!';}catch(err){prompt('Copy this link:',appUrl);}setTimeout(()=>e.target.textContent='Copy link',1500);};
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
+</body>
+</html>
